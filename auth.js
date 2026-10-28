@@ -10,29 +10,29 @@ var Auth = (function () {
     if (new URLSearchParams(location.search).get('expired')) showError('Your session expired. Please log in again.');
     form.addEventListener('submit', async function (e) {
       e.preventDefault(); showError('');
-      var id = form.identifier.value.trim(), pw = form.password.value;
+      var id = form.elements.identifier.value.trim(), pw = form.elements.password.value;
       if (!id || !pw) { showError('Enter your ' + (role === 'Teacher' ? 'email' : 'email or username') + ' and password.'); return; }
       var btn = form.querySelector('button[type=submit]'); App.setBusy(btn, true);
       try {
         var r = await Api.call('login', { role: role, identifier: id, password: pw }, { auth: false });
         Api.saveSession(r.data.token, r.data.user);
         location.href = HOME[role];
-      } catch (err) { showError(err.message); form.password.value = ''; App.setBusy(btn, false); }
+      } catch (err) { showError(err.message); form.elements.password.value = ''; App.setBusy(btn, false); }
     });
   }
 
   function initSetup() {
     var form = $('#setup-form'); if (!form) return;
     var roleParam = new URLSearchParams(location.search).get('role');
-    if (roleParam === 'Teacher' || roleParam === 'Student') form.role.value = roleParam;
+    if (roleParam === 'Teacher' || roleParam === 'Student') form.elements.role.value = roleParam;
     form.addEventListener('submit', async function (e) {
       e.preventDefault(); showError('');
-      if (form.newPassword.value !== form.confirm.value) { showError('The two passwords do not match.'); return; }
+      if (form.elements.newPassword.value !== form.elements.confirm.value) { showError('The two passwords do not match.'); return; }
       var btn = form.querySelector('button[type=submit]'); App.setBusy(btn, true);
       try {
-        await Api.call('completePasswordSetup', { role: form.role.value, identifier: form.identifier.value.trim(), setupCode: form.setupCode.value.trim(), newPassword: form.newPassword.value }, { auth: false });
+        await Api.call('completePasswordSetup', { role: form.elements.role.value, identifier: form.elements.identifier.value.trim(), setupCode: form.elements.setupCode.value.trim(), newPassword: form.elements.newPassword.value }, { auth: false });
         App.toast('Password saved. Redirecting to login...', 'ok');
-        setTimeout(function () { location.href = form.role.value === 'Teacher' ? 'teacher-login.html' : 'student-login.html'; }, 1200);
+        setTimeout(function () { location.href = form.elements.role.value === 'Teacher' ? 'teacher-login.html' : 'student-login.html'; }, 1200);
       } catch (err) { showError(err.message); App.setBusy(btn, false); }
     });
   }

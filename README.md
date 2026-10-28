@@ -1,35 +1,35 @@
-# Institute Desk - Phase 1 & 2 (design system, login, authentication)
+# Institute Desk - Teacher-Student Management System
 
-Included: home page, teacher/student login, first-time password setup, session-protected placeholder dashboards, and the Apps Script backend core (router, sessions, hashing, rate limiting, ownership helpers, Sheets setup).
-Not built yet: students, practice, leave, reports, notifications (Phases 3-7).
+Frontend: HTML/CSS/vanilla JS on Vercel. Backend: Google Apps Script. Database: Google Sheets.
 
-## 1. Backend setup (Google)
-1. Create a Google Spreadsheet. Open **Extensions > Apps Script**.
-2. Add three script files and paste in `apps-script/Utilities.gs`, `Authentication.gs`, `Code.gs`.
-3. Select `initializeApplication` and click **Run** (authorize when asked). It creates all 10 sheets, hides `Credentials` and `Sessions`, creates a secret pepper in Script Properties, and adds the two teacher rows.
-4. Run `issueTeacherSetupCodes`. Open **Execution log**: it prints one setup code per teacher. Give each teacher their own code privately.
-5. Optional: run `installMaintenanceTrigger` once (daily cleanup of old sessions).
-6. **Deploy > New deployment > Web app**: Execute as **Me**, Who has access **Anyone**. Copy the URL ending in `/exec`.
-   - Trade-off: the endpoint is publicly reachable. Security rests entirely on the server-side session, role and ownership checks. Only actions in `ROUTES` (Code.gs) can be called.
-   - After every backend code change: **Deploy > Manage deployments > Edit > New version**.
+## Updating an existing deployment (you already did Phase 1-2)
+1. In Apps Script, add new files and paste in: `StudentManagement`, `PracticeManagement`, `LeaveManagement`, `Reports`, `Notifications`. **Replace** the contents of `Utilities`, `Authentication` and `Code` with the new versions.
+2. Run `initializeApplication` again. It is safe: it adds the new columns (Students.Notes, StudentPractice.SubmissionNotes/ActualDuration/SubmittedAt, LeaveRequests.AdditionalDetails, LeaveIncidents.SubmittedBy) and keeps existing data and passwords.
+3. Project Settings (gear icon) > set the **time zone** to your local zone (e.g. Asia/Kolkata). Overdue dates and "today" use it.
+4. Optional: run `installMaintenanceTrigger` once (daily session cleanup + deadline/pending-approval reminders).
+5. **Deploy > Manage deployments > Edit > Version: New version > Deploy.** The URL stays the same. Without this step the website still talks to the old code.
+6. Upload the whole frontend folder to GitHub (replace old files, keep your `config.js` with your real URL). Vercel redeploys automatically.
 
-## 2. Frontend setup
-1. Put the Web App URL in `config.js`.
-2. Push this folder (everything except `apps-script/`, which is optional to keep) to GitHub, import it in Vercel as a static project (no build command). `vercel.json` adds security headers and a CSP.
-3. Each teacher opens `set-password.html?role=Teacher`, enters their email, the setup code, and chooses their own password.
+## Using it
+- Teacher: Create Student shows a one-time setup code. Give it to the student; they open `set-password.html`, enter email + code + new password. "New setup code" on the Students page handles forgotten passwords.
+- Practice and Leave Incidents: type a student's email or phone, press Find, confirm the student, then fill the form. Name, course and batch come from the server.
+- Leave: students submit (always Pending). Teachers approve/reject on Leave Approvals. Approved requests get exactly one row in `ApprovedLeaves`.
+- Reports: choose a report, filters, Run, Export CSV (spreadsheet formula characters are neutralised).
 
-## 3. How requests work
-`fetch(API_URL, {method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({action, token, payload})})`.
-`text/plain` avoids a CORS preflight that Apps Script cannot answer; the server parses and validates the JSON itself. **You must verify this on your deployed URL** (browser DevTools > Network).
+## Design decisions
+- Teacher identity comes only from the server session. Every record read/write checks the owning TeacherID; students can only touch their own rows.
+- Approval is crash-safe: request -> Approved (SyncStatus PendingSync) -> ApprovedLeaves row -> Synced. If a step fails, the teacher sees "Retry sync" and approving again completes it without duplicates.
+- Overdue is computed from the due date, never stored. Opening an assignment never changes its status.
+- Online/Offline dashboard cards count Active students only.
+- Students with status Completed can still log in; Inactive cannot (and are signed out immediately).
+- Apps Script access must be "Anyone"; all protection is the server-side session/role/ownership checks.
 
-## 4. Security notes (be aware of the limits)
-- Passwords: salted, iterated SHA-256 plus a secret pepper held in Script Properties. Apps Script has no bcrypt/Argon2, so this is weaker than those. Use long passwords.
-- Sessions: random 256-bit token; only its hash is stored; 8-hour expiry; revoked on logout/password change.
-- The token is kept in `sessionStorage` (cleared when the tab closes). Any XSS bug could read it, so all user text must be escaped with `App.esc` when rendered (future pages must follow this).
-- 5 failed logins per account locks it for 15 minutes (CacheService).
-- The "account has not been created yet" message (required by the brief) lets someone test whether a student email exists. Accepted trade-off.
-- Students with status Completed can still log in to see history; Inactive cannot.
-- Teacher identity always comes from the session; the frontend never sends a TeacherID.
+## Not implemented (be aware)
+- **Supporting document upload** for leave (optional in your brief): would need Google Drive access; not built.
+- **Email notifications** (optional in your brief): in-app only.
+- Passwords use salted, iterated SHA-256 with a secret pepper (Apps Script has no bcrypt/Argon2).
+- Session token lives in `sessionStorage`; all displayed user text is escaped.
 
-## 5. Tests
-Backend logic was tested with a mocked Google services harness (25 checks: setup codes, hashing, sessions, forged/missing tokens, route whitelist, ownership, lockout). It has **not** been tested against a real spreadsheet, real Apps Script deployment, or Vercel; do that with the checklist in section 24 of your brief.
+## What was tested
+Automated checks with mocked Google services: 58 backend checks (ownership isolation, duplicate/overlap blocking, approval idempotency and repair, report scoping, session revocation) and 35 UI checks (every page renders for both roles; filters, search, create student, practice lookup, approve/reject/submit buttons) with no JavaScript errors.
+**Not tested against your real spreadsheet/Apps Script/Vercel or on a phone.** Please run the checklist in section 24 of your brief after deploying.

@@ -10,6 +10,13 @@ Frontend: HTML/CSS/vanilla JS on Vercel. Backend: Google Apps Script. Database: 
 5. **Deploy > Manage deployments > Edit > Version: New version > Deploy.** The URL stays the same. Without this step the website still talks to the old code.
 6. Upload the whole frontend folder to GitHub (replace old files, keep your `config.js` with your real URL). Vercel redeploys automatically.
 
+## Update 2: test marks and progress log
+Add the new file `AcademicRecords.gs`, replace `Utilities`, `Code` and `Reports`, run `initializeApplication` (creates the `TestMarks` and `ProgressLog` sheets), then deploy a **New version**. Re-upload the whole frontend folder (new: `records.js`, `test-marks.html`, `progress-log.html`, `student-marks.html`, `student-progress.html`; other files gained small changes).
+- Teacher > **Test Marks**: name the test, set date and maximum marks, type marks for students (blank = skipped), Save. Edit a mark later with Edit. Students are notified.
+- Teacher > **Progress Log**: find the student by email/phone, set the period, **days practiced** (cannot exceed days in the period) and **topics covered**.
+- Student > **My Marks** (average and best score) and **My Progress** (total days practiced, topics per period). Students only see their own.
+- Both appear in Reports with CSV export. Marks cannot be deleted (history is kept); correct them with Edit.
+
 ## Using it
 - Teacher: Create Student shows a one-time setup code. Give it to the student; they open `set-password.html`, enter email + code + new password. "New setup code" on the Students page handles forgotten passwords.
 - Practice and Leave Incidents: type a student's email or phone, press Find, confirm the student, then fill the form. Name, course and batch come from the server.
@@ -31,5 +38,5 @@ Frontend: HTML/CSS/vanilla JS on Vercel. Backend: Google Apps Script. Database: 
 - Session token lives in `sessionStorage`; all displayed user text is escaped.
 
 ## What was tested
-Automated checks with mocked Google services: 58 backend checks (ownership isolation, duplicate/overlap blocking, approval idempotency and repair, report scoping, session revocation) and 35 UI checks (every page renders for both roles; filters, search, create student, practice lookup, approve/reject/submit buttons) with no JavaScript errors.
+Automated checks with mocked Google services: 83 backend checks (ownership isolation, duplicate/overlap blocking, approval idempotency and repair, report scoping, session revocation) and 47 UI checks (every page renders for both roles; filters, search, create student, practice lookup, approve/reject/submit buttons) with no JavaScript errors.
 **Not tested against your real spreadsheet/Apps Script/Vercel or on a phone.** Please run the checklist in section 24 of your brief after deploying.

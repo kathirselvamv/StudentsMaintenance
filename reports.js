@@ -1,7 +1,7 @@
 /* reports.js - teacher reports with filters and CSV export (data comes only from the teacher's own records) */
 Pages.Teacher.reports = async function (ctx) {
   var TYPES = [['students', 'Students'], ['practice-all', 'Practice - all'], ['practice-completed', 'Practice completion'], ['practice-pending', 'Pending practice'], ['practice-overdue', 'Overdue practice'],
-    ['leave-approved', 'Approved leave'], ['leave-pending', 'Pending leave'], ['leave-rejected', 'Rejected leave'], ['leave-emergency', 'Emergency leave'], ['incidents-late', 'Late leave incidents'], ['incidents-unreported', 'Unreported absences']];
+    ['leave-approved', 'Approved leave'], ['leave-pending', 'Pending leave'], ['leave-rejected', 'Rejected leave'], ['leave-emergency', 'Emergency leave'], ['incidents-late', 'Late leave incidents'], ['incidents-unreported', 'Unreported absences'], ['test-marks', 'Test marks'], ['progress-log', 'Progress log']];
   var last = null, students = (await Api.call('getStudents', {})).data.students;
   function uniq(k) { return Object.keys(students.reduce(function (o, s) { if (s[k]) o[s[k]] = 1; return o; }, {})).sort(); }
   ctx.view.innerHTML = '<div class="page-head"><div><h2>Reports</h2><p>Reports include only your own students.</p></div></div><section class="panel"><form id="rf"><div class="filters">' +

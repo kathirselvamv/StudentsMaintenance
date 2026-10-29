@@ -1,9 +1,9 @@
 /* shell.js - sidebar, top bar, session guard, shared Notifications page */
 var Shell = (function () {
   var NAV = {
-    Teacher: [['teacher-dashboard', 'Dashboard'], ['students', 'Students'], ['create-student', 'Create Student'], ['practice', 'Practice Management'],
+    Teacher: [['teacher-dashboard', 'Dashboard'], ['students', 'Students'], ['create-student', 'Create Student'], ['practice', 'Practice Management'], ['test-marks', 'Test Marks'], ['progress-log', 'Progress Log'],
       ['leave-requests', 'Leave Approvals'], ['leave-incidents', 'Leave Incidents'], ['reports', 'Reports'], ['notifications', 'Notifications'], ['settings', 'Settings']],
-    Student: [['student-dashboard', 'My Dashboard'], ['student-profile', 'My Profile'], ['student-practice', 'My Practice'], ['practice-history', 'Practice History'],
+    Student: [['student-dashboard', 'My Dashboard'], ['student-profile', 'My Profile'], ['student-practice', 'My Practice'], ['practice-history', 'Practice History'], ['student-marks', 'My Marks'], ['student-progress', 'My Progress'],
       ['student-leave', 'Normal Leave Request'], ['student-late', 'Late Leave / Leave Not Reported'], ['student-emergency', 'Emergency Leave'], ['leave-history', 'Leave History'], ['notifications', 'Notifications']]
   };
   var BELL = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';

@@ -163,3 +163,15 @@ dialog.dlg::backdrop{background:rgba(15,23,42,.55)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .mt{margin-top:1.25rem}
+
+/* online tests */
+.timer{position:fixed;right:1rem;bottom:1rem;z-index:20;background:var(--navy);color:#fff;font-family:var(--font-head);font-size:1.2rem;padding:.5rem 1rem;border-radius:12px;box-shadow:0 10px 24px -8px rgba(23,37,84,.6)}
+.timer.low{background:var(--danger)}
+fieldset.q{border:1px solid var(--line);border-radius:12px;background:#fff;padding:1rem 1.1rem;margin:0 0 .9rem}
+fieldset.q legend{font-weight:600;padding:0 .4rem;max-width:100%}
+.qn{color:var(--indigo)}
+.opt{display:flex;gap:.6rem;align-items:flex-start;padding:.5rem .65rem;border:1.5px solid var(--line);border-radius:10px;margin:.4rem 0;cursor:pointer}
+.opt input{width:auto;margin-top:.3rem}
+.opt:hover{border-color:var(--indigo)}
+.opt.ok{background:#d1fae5;border-color:#34d399;cursor:default}.opt.bad{background:#fee2e2;border-color:#f87171;cursor:default}
+.result-stat{max-width:240px;margin-bottom:1rem}
